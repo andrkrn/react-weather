@@ -13,8 +13,7 @@ var WeatherStatus = React.createClass({
       type: 'GET',
       success: function(data) {
         this.setState({data: data});
-      }.bind(this),
-
+      }.bind(this)
     })
   },
   weatherIcon: function() {
@@ -91,13 +90,14 @@ var WeatherStatus = React.createClass({
 });
 
 var WeatherSearch = React.createClass({
+  handleSuggestSelect: function(suggest) {
+    this.props.handleDataChange(suggest);
+  },
   render: function() {
     return (
       <div className="weather-search">
-        <form>
-          <input type="text" />
-          <input type="submit" value="Search" />
-        </form>
+        <Geosuggest
+          onSuggestSelect={this.handleSuggestSelect}  />
       </div>
     );
   }
@@ -117,10 +117,19 @@ var WeatherApp = React.createClass({
       }.bind(this)
     })
   },
+  handleDataChange: function(data) {
+    this.setState({data: {
+      latitude: data.location.lat,
+      longitude: data.location.lng
+    }});
+  },
   render: function() {
     return (
-      <div className="weather-app">
-        <WeatherStatus data={this.state.data} />
+      <div className="weather-app-container">
+        <WeatherSearch handleDataChange={this.handleDataChange} />
+        <div className="weather-app">
+          <WeatherStatus data={this.state.data} />
+        </div>
       </div>
     );
   }
