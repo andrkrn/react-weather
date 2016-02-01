@@ -1,9 +1,31 @@
+var WeatherTemperature = React.createClass({
+  temperature: function() {
+    switch(this.props.temperature) {
+      case 'c':
+        return this.tempCelcius() + "℃";
+        break;
+      case 'f':
+        return (this.tempCelcius() * 9/5 + 32) + "℉";
+        break;
+    }
+  },
+  tempCelcius: function() {
+    return parseInt(this.props.data.main.temp - 273);
+  },
+  handleTemperatureFormat: function() {
+    var temp = (this.props.temperature === 'c') ? 'f' : 'c';
+    this.props.handleTemperatureFormat(temp);
+  },
+  render: function() {
+    return (
+      <a onClick={this.handleTemperatureFormat}>{this.temperature()}</a>
+    );
+  }
+});
+
 var WeatherStatus = React.createClass({
   getInitialState: function() {
     return {data: {}};
-  },
-  tempCalcius: function() {
-    return parseInt(this.state.data.main.temp - 273);
   },
   updateWeatherData: function(data) {
     $.ajax({
@@ -80,7 +102,10 @@ var WeatherStatus = React.createClass({
         <div className="weather-status">
           <h2>
             <i className={this.weatherIcon()}></i>
-            {this.tempCalcius()} &#8451;
+            <WeatherTemperature
+              data={this.state.data}
+              handleTemperatureFormat={this.props.handleTemperatureFormat}
+              temperature={this.props.temperature} />
           </h2>
           <p>{this.state.data.name}, {this.state.data.sys.country}</p>
         </div>
@@ -105,7 +130,10 @@ var WeatherSearch = React.createClass({
 
 var WeatherApp = React.createClass({
   getInitialState: function() {
-    return {data: {}};
+    return {
+      data: {},
+      temperature: 'c'
+    };
   },
   componentDidMount: function() {
     $.ajax({
@@ -123,12 +151,18 @@ var WeatherApp = React.createClass({
       longitude: data.location.lng
     }});
   },
+  handleTemperatureFormat: function(temp) {
+    this.setState({temperature: temp});
+  },
   render: function() {
     return (
       <div className="weather-app-container">
         <WeatherSearch handleDataChange={this.handleDataChange} />
         <div className="weather-app">
-          <WeatherStatus data={this.state.data} />
+          <WeatherStatus
+            data={this.state.data}
+            handleTemperatureFormat={this.handleTemperatureFormat}
+            temperature={this.state.temperature} />
         </div>
       </div>
     );

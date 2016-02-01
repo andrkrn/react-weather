@@ -3,6 +3,19 @@ html, body {
   height: 100%;
 }
 
+a {
+  color: #222;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+a:hover {
+  color: rgba(34, 34, 34, .5);
+}
+
 #app {
   position: relative;
   display: -webkit-box;
