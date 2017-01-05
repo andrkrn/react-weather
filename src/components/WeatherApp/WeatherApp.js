@@ -11,6 +11,7 @@ class WeatherApp extends Component {
     super(props);
 
     this.state = {
+      label: '',
       ip: '',
       latitude: '',
       longitude: '',
@@ -45,6 +46,8 @@ class WeatherApp extends Component {
     if (
       this.state.latitude !== '' &&
       this.state.longitude !== '' &&
+      this.state.latitude !== undefined &&
+      this.state.longitude !== undefined &&
       prevState.latitude !== this.state.latitude &&
       prevState.longitude !== this.state.longitude
     ) {
@@ -79,15 +82,31 @@ class WeatherApp extends Component {
     return weather;
   }
 
+  handleChangeLocation(suggest) {
+    this.setState({
+      latitude: suggest.location.lat,
+      longitude: suggest.location.lng,
+      label: suggest.label
+    })
+  }
+
+  handleLabel() {
+    if (this.state.label !== '' && this.state.label !== undefined) {
+      return this.state.label
+    } else {
+      return `${this.state.data.name}, ${this.state.data.sys.country}`
+    }
+  }
+
   render() {
     return (
       <div className='weather-app'>
-        <WeatherSearch />
+        <WeatherSearch handleChangeLocation={this.handleChangeLocation.bind(this)} />
         <div className='weather-container'>
-          <div className='weather-title'>{`${this.state.data.name}, ${this.state.data.sys.country}`}</div>
+          <div className='weather-title'>{`${this.handleLabel()}`}</div>
           <div className='weather-status'>{`${this.handleWeatherStatus()}`}</div>
           <div className='weather-details'>
-            <WeatherIcon />
+            <WeatherIcon weather={this.state.data.weather} />
             <WeatherTemperature
               indicator={this.state.indicator}
               handleIndicator={this.handleIndicator.bind(this)}
